@@ -1,0 +1,15 @@
+{
+  "name": "vstream-cli",
+  "version": "0.0.1",
+  "description": "VStream's official CLI app",
+  "bin": {
+    "vstream": "dist/cli.js"
+  },
+  "scripts": {
+    "build": "esbuild src/index.ts --bundle --outfile=dist/cli.js"
+  },
+  "devDependencies": {
+    "esbuild": "^0.19.5",
+    "typescript": "^5.2.2"
+  }
+}
