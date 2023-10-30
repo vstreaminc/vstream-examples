@@ -1,0 +1,30 @@
+{
+  "name": "@vstream/cli",
+  "version": "0.0.1",
+  "description": "A CLI application built with VStream's public API",
+  "bin": {
+    "vstream": "dist/index.mjs"
+  },
+  "scripts": {
+    "build": "tsc",
+    "vstream": "node dist/index.mjs"
+  },
+  "dependencies": {
+    "@commander-js/extra-typings": "^11.1.0",
+    "@iarna/toml": "^2.2.5",
+    "@inquirer/prompts": "^3.2.0",
+    "commander": "^11.1.0",
+    "keytar": "^7.9.0",
+    "node-fetch": "^3.3.2",
+    "open": "^9.1.0",
+    "ospath": "^1.2.2",
+    "tiny-invariant": "^1.3.1",
+    "zod": "^3.22.4"
+  },
+  "devDependencies": {
+    "@types/node": "^20.8.9",
+    "@types/ospath": "^1.2.2",
+    "esbuild": "^0.19.5",
+    "typescript": "^5.2.2"
+  }
+}
