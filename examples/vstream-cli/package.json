@@ -1,7 +1,7 @@
 {
   "name": "@vstream/cli",
   "version": "0.0.1",
-  "description": "VStream's official CLI app",
+  "description": "A CLI application built with VStream's public API",
   "bin": {
     "vstream": "dist/index.mjs"
   },
