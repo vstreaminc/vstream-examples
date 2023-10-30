@@ -6,7 +6,8 @@
     "vstream": "dist/index.mjs"
   },
   "scripts": {
-    "build": "tsc"
+    "build": "tsc",
+    "vstream": "node dist/index.mjs"
   },
   "dependencies": {
     "@commander-js/extra-typings": "^11.1.0",

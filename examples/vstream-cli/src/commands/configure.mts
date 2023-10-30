@@ -8,7 +8,7 @@ import { program } from "../program.mjs";
 
 program
   .command("configure")
-  .description("Configure the CLI with your VStream app credentials.")
+  .description("configure your VStream app client credentials")
   .option("-c, --client-id <id>", "OAuth client ID")
   .option("-s, --client-secret <secret>", "OAuth client secret")
   .option("-p, --port <number>", "OAuth redirect port")

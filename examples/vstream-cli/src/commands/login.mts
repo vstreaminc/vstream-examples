@@ -41,7 +41,7 @@ const Scope = (discovery: z.infer<typeof DiscoveryResponse>) =>
 
 program
   .command("login")
-  .description("Login to VStream with OAuth.")
+  .description("log in to VStream with OAuth")
   .option("-s, --scopes <scopes>", "OAuth scopes", (scopes) =>
     scopes.split(",")
   )
