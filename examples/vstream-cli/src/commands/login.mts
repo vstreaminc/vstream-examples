@@ -1,42 +1,15 @@
 import * as crypto from "node:crypto";
 import * as http from "node:http";
-import * as fs from "node:fs/promises";
-import * as path from "node:path";
-import fetch from "node-fetch";
-import keytar from "keytar";
 import z from "zod";
 import open from "open";
-import ospath from "ospath";
 import invariant from "tiny-invariant";
-import TOML from "@iarna/toml";
 import { checkbox } from "@inquirer/prompts";
 import { program } from "../program.mjs";
+import { getConfig, type Config } from "../utils/config.mjs";
+import { getDiscovery, type DiscoveryResponse } from "../utils/discovery.mjs";
+import { getNewToken, saveToken } from "../utils/token.mjs";
 
-const VSTREAM_URL = process.env.VSTREAM_URL ?? "https://api.vstream.com";
-
-const Config = z.object({
-  client: z.object({
-    client_id: z.string(),
-    client_secret: z.string(),
-    redirect_port: z.number().int(),
-  }),
-});
-
-const DiscoveryResponse = z.object({
-  authorization_endpoint: z.string().url(),
-  token_endpoint: z.string().url(),
-  scopes_supported: z.array(z.string()),
-});
-
-const TokenResponse = z.object({
-  access_token: z.string(),
-  token_type: z.string(),
-  expires_in: z.number(),
-  refresh_token: z.string(),
-  scope: z.string(),
-});
-
-const Scope = (discovery: z.infer<typeof DiscoveryResponse>) =>
+const Scope = (discovery: DiscoveryResponse) =>
   z.string().refine((scope) => discovery.scopes_supported.includes(scope));
 
 program
@@ -53,16 +26,13 @@ program
     const state = generateState();
     const authUrl = generateAuthUrl(discovery, config, scopes, verifier, state);
     const code = await retrieveAuthorizationCode(config, authUrl, state);
-    const token = await retrieveAccessToken(discovery, config, verifier, code);
+    const token = await getNewToken(discovery, config, verifier, code);
     await saveToken(token);
 
     console.log("Login successful!");
   });
 
-async function promptScopes(
-  discovery: z.infer<typeof DiscoveryResponse>,
-  scopes?: string[]
-) {
+async function promptScopes(discovery: DiscoveryResponse, scopes?: string[]) {
   return Scope(discovery)
     .array()
     .parse(
@@ -72,29 +42,6 @@ async function promptScopes(
           choices: discovery.scopes_supported.map((value) => ({ value })),
         }))
     );
-}
-
-async function getDiscovery() {
-  try {
-    const discoveryUrl = `${VSTREAM_URL}/oidc/.well-known/openid-configuration`;
-    const response = await fetch(discoveryUrl).then((res) => res.json());
-    return DiscoveryResponse.parse(response);
-  } catch (error) {
-    console.error("Failed to fetch discovery document");
-    throw error;
-  }
-}
-
-async function getConfig() {
-  try {
-    const dir = path.join(ospath.data(), "vstream");
-    const file = path.join(dir, "config.toml");
-    const data = await fs.readFile(file, "utf-8").then(TOML.parse);
-    return Config.parse(data);
-  } catch (error) {
-    console.error("Failed to read config file");
-    throw error;
-  }
 }
 
 function generateState() {
@@ -110,8 +57,8 @@ function generateCodeChallenge(verifier: string) {
 }
 
 function generateAuthUrl(
-  discovery: z.infer<typeof DiscoveryResponse>,
-  config: z.infer<typeof Config>,
+  discovery: DiscoveryResponse,
+  config: Config,
   scopes: string[],
   verifier: string,
   state: string
@@ -140,7 +87,7 @@ function generateAuthUrl(
 }
 
 async function retrieveAuthorizationCode(
-  config: z.infer<typeof Config>,
+  config: Config,
   authUrl: string,
   state: string
 ) {
@@ -163,34 +110,6 @@ async function retrieveAuthorizationCode(
 
     return code;
   });
-}
-
-async function retrieveAccessToken(
-  discovery: z.infer<typeof DiscoveryResponse>,
-  config: z.infer<typeof Config>,
-  verifier: string,
-  code: string
-) {
-  const response = await fetch(discovery.token_endpoint, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/x-www-form-urlencoded",
-    },
-    body: new URLSearchParams({
-      grant_type: "authorization_code",
-      client_id: config.client.client_id,
-      client_secret: config.client.client_secret,
-      code_verifier: verifier,
-      code,
-      redirect_uri: `http://localhost:${config.client.redirect_port}/`,
-    }),
-  }).then((res) => res.json());
-
-  return TokenResponse.parse(response);
-}
-
-async function saveToken(token: z.infer<typeof TokenResponse>) {
-  await keytar.setPassword("vstream", "token", JSON.stringify(token));
 }
 
 function withHttpServer<T>(
