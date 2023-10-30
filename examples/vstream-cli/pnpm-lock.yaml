@@ -6,12 +6,14 @@ specifiers:
   '@inquirer/prompts': ^3.2.0
   '@types/node': ^20.8.9
   '@types/ospath': ^1.2.2
+  '@types/prettyjson': ^0.0.32
   commander: ^11.1.0
   esbuild: ^0.19.5
   keytar: ^7.9.0
   node-fetch: ^3.3.2
   open: ^9.1.0
   ospath: ^1.2.2
+  prettyjson: ^1.2.5
   tiny-invariant: ^1.3.1
   typescript: ^5.2.2
   zod: ^3.22.4
@@ -25,12 +27,14 @@ dependencies:
   node-fetch: 3.3.2
   open: 9.1.0
   ospath: 1.2.2
+  prettyjson: 1.2.5
   tiny-invariant: 1.3.1
   zod: 3.22.4
 
 devDependencies:
   '@types/node': 20.8.9
   '@types/ospath': 1.2.2
+  '@types/prettyjson': 0.0.32
   esbuild: 0.19.5
   typescript: 5.2.2
 
@@ -380,6 +384,10 @@ packages:
     resolution: {integrity: sha512-wprLMaAclFFAzU+cifN4gkslk+2dZqKd66p56ZJPQwRDssbMvisUjl0RWpN5qxLLN3x8imHqORdpkDcRxudJcw==}
     dev: true
 
+  /@types/prettyjson/0.0.32:
+    resolution: {integrity: sha512-LG24e5OBRfBTGfcwiIMMj8UcmdaSoZLDNg0DoiI55UnbqWpIz6CraPdfWqpHWFvymyXhoBY95w+Z9XqW9X8zdg==}
+    dev: true
+
   /@types/wrap-ansi/3.0.0:
     resolution: {integrity: sha512-ltIpx+kM7g/MLRZfkbL7EsCEjfzCcScLpkg37eXEtx5kmrAKBkTJwd1GIAjDSL8wTpM6Hzn5YO4pSb91BEwu1g==}
     dev: false
@@ -476,6 +484,11 @@ packages:
 
   /color-name/1.1.4:
     resolution: {integrity: sha512-dOy+3AuW3a2wNbZHIuMZpTcgjGuLU/uBL/ubcZF9OXbDo8ff4O8yVp5Bf0efS8uEoYo5q4Fx7dY9OgQGXgAsQA==}
+    dev: false
+
+  /colors/1.4.0:
+    resolution: {integrity: sha512-a+UqTh4kgZg/SlGvfbzDHpgRu7AAQOmmqRHJnxhRZICKFUT91brVhNNt58CMWU9PsBbv3PDCZUHbVxuDiH2mtA==}
+    engines: {node: '>=0.1.90'}
     dev: false
 
   /commander/11.1.0:
@@ -897,6 +910,14 @@ packages:
       simple-get: 4.0.1
       tar-fs: 2.1.1
       tunnel-agent: 0.6.0
+    dev: false
+
+  /prettyjson/1.2.5:
+    resolution: {integrity: sha512-rksPWtoZb2ZpT5OVgtmy0KHVM+Dca3iVwWY9ifwhcexfjebtgjg3wmrUt9PvJ59XIYBcknQeYHD8IAnVlh9lAw==}
+    hasBin: true
+    dependencies:
+      colors: 1.4.0
+      minimist: 1.2.8
     dev: false
 
   /pump/3.0.0:
