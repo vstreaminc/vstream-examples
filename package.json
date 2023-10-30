@@ -6,15 +6,18 @@
     "vstream": "dist/cli.js"
   },
   "scripts": {
-    "build": "esbuild src/index.ts --bundle --platform=node --outfile=dist/cli.js"
+    "build": "esbuild src/index.ts --bundle --platform=node --outfile=dist/cli.js --sourcemap"
   },
   "dependencies": {
     "@commander-js/extra-typings": "^11.1.0",
+    "@iarna/toml": "^2.2.5",
     "@inquirer/prompts": "^3.2.0",
-    "commander": "^11.1.0"
+    "commander": "^11.1.0",
+    "ospath": "^1.2.2"
   },
   "devDependencies": {
     "@types/node": "^20.8.9",
+    "@types/ospath": "^1.2.2",
     "esbuild": "^0.19.5",
     "typescript": "^5.2.2"
   }

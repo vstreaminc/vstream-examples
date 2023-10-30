@@ -2,19 +2,25 @@ lockfileVersion: 5.4
 
 specifiers:
   '@commander-js/extra-typings': ^11.1.0
+  '@iarna/toml': ^2.2.5
   '@inquirer/prompts': ^3.2.0
   '@types/node': ^20.8.9
+  '@types/ospath': ^1.2.2
   commander: ^11.1.0
   esbuild: ^0.19.5
+  ospath: ^1.2.2
   typescript: ^5.2.2
 
 dependencies:
   '@commander-js/extra-typings': 11.1.0_commander@11.1.0
+  '@iarna/toml': 2.2.5
   '@inquirer/prompts': 3.2.0
   commander: 11.1.0
+  ospath: 1.2.2
 
 devDependencies:
   '@types/node': 20.8.9
+  '@types/ospath': 1.2.2
   esbuild: 0.19.5
   typescript: 5.2.2
 
@@ -226,6 +232,10 @@ packages:
     dev: true
     optional: true
 
+  /@iarna/toml/2.2.5:
+    resolution: {integrity: sha512-trnsAYxU3xnS1gPHPyU961coFyLkh4gAD/0zQ5mymY4yOZ+CYvsPqUbOFSw0aDM4y0tV7tiFxL/1XfXPNC6IPg==}
+    dev: false
+
   /@inquirer/checkbox/1.4.0:
     resolution: {integrity: sha512-7YcekwCvMTjrgjUursrH6AGZUSPw7gKPMvp0VhM3iq9mL46a7AeCfOTQTW0UPeiIfWmZK8wHyAD6wIhfDyLHpw==}
     engines: {node: '>=14.18.0'}
@@ -355,6 +365,10 @@ packages:
     resolution: {integrity: sha512-UzykFsT3FhHb1h7yD4CA4YhBHq545JC0YnEz41xkipN88eKQtL6rSgocL5tbAP6Ola9Izm/Aw4Ora8He4x0BHg==}
     dependencies:
       undici-types: 5.26.5
+
+  /@types/ospath/1.2.2:
+    resolution: {integrity: sha512-wprLMaAclFFAzU+cifN4gkslk+2dZqKd66p56ZJPQwRDssbMvisUjl0RWpN5qxLLN3x8imHqORdpkDcRxudJcw==}
+    dev: true
 
   /@types/wrap-ansi/3.0.0:
     resolution: {integrity: sha512-ltIpx+kM7g/MLRZfkbL7EsCEjfzCcScLpkg37eXEtx5kmrAKBkTJwd1GIAjDSL8wTpM6Hzn5YO4pSb91BEwu1g==}
@@ -497,6 +511,10 @@ packages:
   /os-tmpdir/1.0.2:
     resolution: {integrity: sha512-D2FR03Vir7FIu45XBY20mTb+/ZSWB00sjU9jdQXt83gDrI4Ztz5Fs7/yy74g2N5SVQY4xY1qDr4rNddwYRVX0g==}
     engines: {node: '>=0.10.0'}
+    dev: false
+
+  /ospath/1.2.2:
+    resolution: {integrity: sha512-o6E5qJV5zkAbIDNhGSIlyOhScKXgQrSRMilfph0clDfM0nEnBOlKlH4sWDmG95BW/CvwNz0vmm7dJVtU2KlMiA==}
     dev: false
 
   /run-async/3.0.0:

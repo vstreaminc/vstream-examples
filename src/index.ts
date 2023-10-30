@@ -1,10 +1,5 @@
-import { Command } from "@commander-js/extra-typings";
+import { program } from "./program";
 
-const program = new Command();
-
-program
-  .name("vstream")
-  .description("VStream's official CLI app")
-  .version("0.0.1");
+import "./commands/configure";
 
 program.parse();
