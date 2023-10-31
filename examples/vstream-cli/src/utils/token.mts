@@ -24,15 +24,18 @@ export async function getNewToken(
   verifier: string,
   code: string
 ) {
+  const auth = `Basic ${Buffer.from(
+    `${config.client.client_id}:${config.client.client_secret}`
+  ).toString("base64")}`;
+
   const response = await fetch(discovery.token_endpoint, {
     method: "POST",
     headers: {
       "Content-Type": "application/x-www-form-urlencoded",
+      Authorization: auth,
     },
     body: new URLSearchParams({
       grant_type: "authorization_code",
-      client_id: config.client.client_id,
-      client_secret: config.client.client_secret,
       code_verifier: verifier,
       code,
       redirect_uri: `http://localhost:${config.client.redirect_port}/`,
