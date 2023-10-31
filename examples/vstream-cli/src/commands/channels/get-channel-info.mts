@@ -27,10 +27,10 @@ channels
       },
     });
     if (response.status === 404) {
-      console.error("Channel not found");
+      throw new Error("Channel not found");
     }
     if (!response.ok) {
-      console.error("Failed to fetch channel info");
+      throw new Error("Failed to fetch channel info");
     }
 
     const json = await response.json();
