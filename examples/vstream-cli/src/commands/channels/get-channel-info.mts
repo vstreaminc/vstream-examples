@@ -3,7 +3,7 @@ import fetch from "node-fetch";
 import { z } from "zod";
 import { channels } from "./index.mjs";
 import { requireSavedToken } from "../../utils/token.mjs";
-import { VSTREAM_URL } from "../../utils/constants.mjs";
+import { API_URL } from "../../utils/constants.mjs";
 import { FORMAT_OPTION, format } from "../../utils/format.mjs";
 
 channels
@@ -20,7 +20,7 @@ channels
         message: "Enter a channel ID",
       }));
 
-    const url = `${VSTREAM_URL}/channels/${channelId}/info`;
+    const url = `${API_URL}/channels/${channelId}/info`;
     const response = await fetch(url, {
       headers: {
         Authorization: `Bearer ${token.access_token}`,

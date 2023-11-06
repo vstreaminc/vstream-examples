@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { VSTREAM_URL } from "./constants.mjs";
+import { API_URL } from "./constants.mjs";
 
 export type DiscoveryResponse = z.infer<typeof DiscoveryResponse>;
 
@@ -11,7 +11,7 @@ const DiscoveryResponse = z.object({
 
 export async function getDiscovery() {
   try {
-    const discoveryUrl = `${VSTREAM_URL}/oidc/.well-known/openid-configuration`;
+    const discoveryUrl = `${API_URL}/oidc/.well-known/openid-configuration`;
     const response = await fetch(discoveryUrl).then((res) => res.json());
     return DiscoveryResponse.parse(response);
   } catch (error) {

@@ -5,5 +5,6 @@ import "./commands/login.mjs";
 import "./commands/channels/get-channel-info.mjs";
 import "./commands/channels/get-channel-metrics.mjs";
 import "./commands/channels/get-channel.mjs";
+import "./commands/channels/tail-events.mjs";
 
 program.parse();
