@@ -7,6 +7,7 @@ import "./commands/channels/get-channel-metrics.mjs";
 import "./commands/channels/get-channel.mjs";
 import "./commands/channels/lookup-channel.mjs";
 import "./commands/channels/tail-events.mjs";
+import "./commands/videos/list-videos.mjs";
 import "./commands/videos/lookup-video.mjs";
 
 program.parse();
