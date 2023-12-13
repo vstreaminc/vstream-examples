@@ -9,7 +9,7 @@ export type Config = z.infer<typeof Config>;
 const Config = z.object({
   client: z.object({
     client_id: z.string(),
-    client_secret: z.string(),
+    client_secret: z.string().optional(),
     redirect_port: z.number().int(),
   }),
 });

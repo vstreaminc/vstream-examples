@@ -10,10 +10,11 @@ const TokenResponse = z.object({
   access_token: z.string(),
   token_type: z.string(),
   expires_in: z.number(),
-  refresh_token: z.string(),
+  refresh_token: z.string().optional(),
   scope: z.string(),
 });
 
+export type SavedToken = z.infer<typeof SavedToken>;
 const SavedToken = TokenResponse.extend({
   expires_at: z.number(),
 });
@@ -24,22 +25,31 @@ export async function getNewToken(
   verifier: string,
   code: string
 ) {
-  const auth = `Basic ${Buffer.from(
-    `${config.client.client_id}:${config.client.client_secret}`
-  ).toString("base64")}`;
+  const headers: HeadersInit = {
+    "Content-Type": "application/x-www-form-urlencoded",
+  };
+
+  if (config.client.client_secret) {
+    headers.Authorization = `Basic ${Buffer.from(
+      `${config.client.client_id}:${config.client.client_secret}`
+    ).toString("base64")}`;
+  }
+
+  const body = new URLSearchParams({
+    grant_type: "authorization_code",
+    code_verifier: verifier,
+    code,
+    redirect_uri: `http://localhost:${config.client.redirect_port}/`,
+  });
+
+  if (!config.client.client_secret) {
+    body.append("client_id", config.client.client_id);
+  }
 
   const response = await fetch(discovery.token_endpoint, {
     method: "POST",
-    headers: {
-      "Content-Type": "application/x-www-form-urlencoded",
-      Authorization: auth,
-    },
-    body: new URLSearchParams({
-      grant_type: "authorization_code",
-      code_verifier: verifier,
-      code,
-      redirect_uri: `http://localhost:${config.client.redirect_port}/`,
-    }),
+    headers,
+    body,
   }).then((res) => res.json());
 
   return TokenResponse.parse(response);
@@ -70,23 +80,36 @@ export async function requireSavedToken() {
 }
 
 export async function refreshToken(token: TokenResponse) {
+  if (!token.refresh_token) {
+    throw new Error("Token expired!");
+  }
+
   const config = await getConfig();
   const discovery = await getDiscovery();
 
-  const auth = `Basic ${Buffer.from(
-    `${config.client.client_id}:${config.client.client_secret}`
-  ).toString("base64")}`;
+  const headers: HeadersInit = {
+    "Content-Type": "application/x-www-form-urlencoded",
+  };
+
+  if (config.client.client_secret) {
+    headers.Authorization = `Basic ${Buffer.from(
+      `${config.client.client_id}:${config.client.client_secret}`
+    ).toString("base64")}`;
+  }
+
+  const body = new URLSearchParams({
+    grant_type: "refresh_token",
+    refresh_token: token.refresh_token,
+  });
+
+  if (!config.client.client_secret) {
+    body.append("client_id", config.client.client_id);
+  }
 
   const response = await fetch(discovery.token_endpoint, {
     method: "POST",
-    headers: {
-      "Content-Type": "application/x-www-form-urlencoded",
-      Authorization: auth,
-    },
-    body: new URLSearchParams({
-      grant_type: "refresh_token",
-      refresh_token: token.refresh_token,
-    }),
+    headers,
+    body,
   }).then((res) => res.json());
 
   const refreshed = TokenResponse.parse(response);
