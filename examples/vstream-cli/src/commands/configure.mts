@@ -1,18 +1,45 @@
 import * as fs from "node:fs/promises";
 import * as path from "node:path";
 import ospath from "ospath";
+import { Option } from "@commander-js/extra-typings";
 import TOML from "@iarna/toml";
 import z from "zod";
-import { input } from "@inquirer/prompts";
+import { input, select } from "@inquirer/prompts";
 import { program } from "../program.mjs";
 
 program
   .command("configure")
   .description("configure your VStream app client credentials")
+  .addOption(
+    new Option("-t, --client-type <type>", "OAuth client type").choices([
+      "confidential",
+      "public",
+    ] as const)
+  )
   .option("-c, --client-id <id>", "OAuth client ID")
   .option("-s, --client-secret <secret>", "OAuth client secret")
   .option("-p, --port <number>", "OAuth redirect port")
   .action(async (options) => {
+    const clientType = z.enum(["confidential", "public"]).parse(
+      options.clientType ??
+        (await select({
+          message: "Enter your client type",
+          choices: [
+            {
+              value: "confidential",
+              name: "Confidential",
+              description:
+                "Confidential clients can keep a client secret private",
+            },
+            {
+              value: "public",
+              name: "Public",
+              description: "Public clients cannot keep a client secret private",
+            },
+          ],
+        }))
+    );
+
     const clientId =
       options.clientId ??
       (await input({
@@ -20,10 +47,12 @@ program
       }));
 
     const clientSecret =
-      options.clientSecret ??
-      (await input({
-        message: "Enter your client secret",
-      }));
+      clientType === "confidential"
+        ? options.clientSecret ??
+          (await input({
+            message: "Enter your client secret",
+          }))
+        : "";
 
     const portRes = z.coerce
       .number()
@@ -49,16 +78,28 @@ program
     }
 
     const configFile = path.join(configDir, "config.toml");
-    const config = {
-      client: {
-        client_id: clientId,
-        client_secret: clientSecret,
-        redirect_port: portRes.data,
-      },
-    };
 
     try {
-      await fs.writeFile(configFile, TOML.stringify(config));
+      if (clientType === "confidential") {
+        const config = {
+          client: {
+            client_id: clientId,
+            client_secret: clientSecret,
+            redirect_port: portRes.data,
+          },
+        };
+
+        await fs.writeFile(configFile, TOML.stringify(config));
+      } else {
+        const config = {
+          client: {
+            client_id: clientId,
+            redirect_port: portRes.data,
+          },
+        };
+
+        await fs.writeFile(configFile, TOML.stringify(config));
+      }
     } catch (error) {
       console.error("Failed to write config file");
       throw error;

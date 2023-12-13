@@ -69,6 +69,12 @@ function generateAuthUrl(
   authUrl.searchParams.append("client_id", config.client.client_id);
   authUrl.searchParams.append("scope", scopes.join(" "));
   authUrl.searchParams.append(
+    "claims",
+    JSON.stringify({
+      id_token: { picture: null, preferred_username: null, profile: null },
+    })
+  );
+  authUrl.searchParams.append(
     "redirect_uri",
     `http://localhost:${config.client.redirect_port}/`
   );
