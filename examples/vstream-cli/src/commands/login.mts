@@ -1,5 +1,6 @@
 import * as crypto from "node:crypto";
 import * as http from "node:http";
+import { decodeJwt } from "jose";
 import z from "zod";
 import open from "open";
 import invariant from "tiny-invariant";
@@ -8,9 +9,13 @@ import { program } from "../program.mjs";
 import { getConfig, type Config } from "../utils/config.mjs";
 import { getDiscovery, type DiscoveryResponse } from "../utils/discovery.mjs";
 import { getNewToken, saveToken } from "../utils/token.mjs";
+import { formatPretty } from "../utils/format.mjs";
 
 const Scope = (discovery: DiscoveryResponse) =>
   z.string().refine((scope) => discovery.scopes_supported.includes(scope));
+
+const Claim = (discovery: DiscoveryResponse) =>
+  z.string().refine((claim) => discovery.claims_supported.includes(claim));
 
 program
   .command("login")
@@ -18,18 +23,36 @@ program
   .option("-s, --scopes <scopes>", "OAuth scopes", (scopes) =>
     scopes.split(",")
   )
+  .option("-c, --claims <claims>", "OpenID Connect claims", (claims) =>
+    claims.split(",")
+  )
   .action(async (options) => {
     const config = await getConfig();
     const discovery = await getDiscovery();
     const scopes = await promptScopes(discovery, options.scopes);
+    const claims = scopes.includes("openid")
+      ? await promptClaims(discovery, options.claims)
+      : [];
     const verifier = generateCodeVerifier();
     const state = generateState();
-    const authUrl = generateAuthUrl(discovery, config, scopes, verifier, state);
+    const authUrl = generateAuthUrl(
+      discovery,
+      config,
+      scopes,
+      claims,
+      verifier,
+      state
+    );
     const code = await retrieveAuthorizationCode(config, authUrl, state);
     const token = await getNewToken(discovery, config, verifier, code);
     await saveToken(token);
 
-    console.log("Login successful!");
+    console.info("Login successful!");
+
+    if (token.id_token) {
+      console.info("User info from ID token:");
+      console.info(formatPretty(decodeJwt(token.id_token)));
+    }
   });
 
 async function promptScopes(discovery: DiscoveryResponse, scopes?: string[]) {
@@ -40,6 +63,18 @@ async function promptScopes(discovery: DiscoveryResponse, scopes?: string[]) {
         (await checkbox({
           message: "Select OAuth scopes",
           choices: discovery.scopes_supported.map((value) => ({ value })),
+        }))
+    );
+}
+
+async function promptClaims(discovery: DiscoveryResponse, claims?: string[]) {
+  return Claim(discovery)
+    .array()
+    .parse(
+      claims ??
+        (await checkbox({
+          message: "Select OpenID Connect claims",
+          choices: discovery.claims_supported.map((value) => ({ value })),
         }))
     );
 }
@@ -60,6 +95,7 @@ function generateAuthUrl(
   discovery: DiscoveryResponse,
   config: Config,
   scopes: string[],
+  claims: string[],
   verifier: string,
   state: string
 ) {
@@ -68,12 +104,15 @@ function generateAuthUrl(
   authUrl.searchParams.append("response_type", "code");
   authUrl.searchParams.append("client_id", config.client.client_id);
   authUrl.searchParams.append("scope", scopes.join(" "));
-  authUrl.searchParams.append(
-    "claims",
-    JSON.stringify({
-      id_token: { picture: null, preferred_username: null, profile: null },
-    })
-  );
+  if (claims.length > 0) {
+    authUrl.searchParams.append(
+      "claims",
+      JSON.stringify({
+        userinfo: Object.fromEntries(claims.map((claim) => [claim, null])),
+        id_token: Object.fromEntries(claims.map((claim) => [claim, null])),
+      })
+    );
+  }
   authUrl.searchParams.append(
     "redirect_uri",
     `http://localhost:${config.client.redirect_port}/`

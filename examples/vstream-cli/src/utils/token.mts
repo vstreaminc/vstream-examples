@@ -10,6 +10,7 @@ const TokenResponse = z.object({
   access_token: z.string(),
   token_type: z.string(),
   expires_in: z.number(),
+  id_token: z.string().optional(),
   refresh_token: z.string().optional(),
   scope: z.string(),
 });

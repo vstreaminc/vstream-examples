@@ -5,8 +5,9 @@ export type DiscoveryResponse = z.infer<typeof DiscoveryResponse>;
 
 const DiscoveryResponse = z.object({
   authorization_endpoint: z.string().url(),
-  token_endpoint: z.string().url(),
+  claims_supported: z.array(z.string()),
   scopes_supported: z.array(z.string()),
+  token_endpoint: z.string().url(),
 });
 
 export async function getDiscovery() {
